@@ -1,33 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <title>Our simple HTTP server</title>
-  <link rel="stylesheet" type="text/css" href="/style.css">
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
-  <script type="text/babel">
+  <head>
+    <title>Our simple HTTP server</title>
+    <link rel="stylesheet" type="text/css" href="/style.css" />
 
-  </script>
-</head>
-<body>
-  <section id="top">
-    <h3>Status Code Tests</h3>
-    <select id="page">
-      <option value="/success">Success</option>
-      <option value="/badRequest">Bad Request</option>
-      <option value="/unauthorized">Unauthorized</option>
-      <option value="/forbidden">Forbidden</option>
-      <option value="/internal">Internal</option>
-      <option value="/notImplemented">Not Implemented</option>
-      <option value="/notFound">Not Found</option>
-    </select>
-    <select id="type">
-      <option value="application/json">JSON</option>
-      <option value="text/xml">XML</option>
-    </select>
-    <button id="send">Send</button>
-  </section>
-  <section id="content">
-  </section>
-</body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+    <script type="text/babel">
+      const handleResponse = (xhr, parseResponse) => {
+        const content = document.querySelector("#content");
+
+        switch (xhr.status) {
+          case 200:
+            content.innerHTML = `<b>Success</b>`;
+            content.innerHTML += `<br>`;
+            content.innerHTML += `<p>Message: This is a successful response</p>`;
+            break;
+          case 400:
+            content.innerHTML = `<b>Bad Request</b>`;
+            content.innerHTML += `<br>`;
+            content.innerHTML += `<p>Message: Missing valid query parameter set to true</p>`;
+            break;
+          case 401:
+            content.innerHTML = `<b>Unauthorized</b>`;
+            content.innerHTML += `<br>`;
+            content.innerHTML += `<p>Message: Missing loggedIn query parameter set to yes</p>`;
+            break;
+          case 403:
+            content.innerHTML = `<b>Forbidden</b>`;
+            content.innerHTML += `<br>`;
+            content.innerHTML += `<p>Message: You do not have access to this content</p>`;
+            break;
+          case 404:
+            content.innerHTML = `<b>Not Found</b>`;
+            content.innerHTML += `<br>`;
+            content.innerHTML += `<p>Message: The page you are looking for was not found</p>`;
+            break;
+          case 500:
+            content.innerHTML = `<b>Internal Server Error</b>`;
+            content.innerHTML += `<br>`;
+            content.innerHTML += `<p>Message: Internal Server Error. Something went wrong</p>`;
+            break;
+          case 501:
+            content.innerHTML = `<b>Not Implemented</b>`;
+            content.innerHTML += `<br>`;
+            content.innerHTML += `<p>Message: A get request for this page has not been implemented yet. Check again later for updated content</p>`;
+            break;
+          default:
+            content.innerHTML = `<p>Error code not implemented by client</p>`;
+            break;
+        }
+
+        if (parseResponse) {
+          //if set to application/json === true if text/xml === false
+          const obj = JSON.parse(xhr.response);
+          console.dir(obj);
+        } else {
+          console.log("recieved");
+        }
+      };
+
+      // const requestUpdate = (e, userForm) => {
+      //   const url = userForm.querySelector('#urlField').value;
+      //   const method = userForm.querySelector('#methodSelect').value;
+
+      //   const xhr = new XMLHttpRequest();
+      //   xhr.open(method, url);
+
+      //   xhr.setRequestHeader('Accept', 'application/json');
+
+      //   if(method === 'get'){
+      //     xhr.onload = () => handleResponse(xhr, true);
+      //   } else if (method === 'head'){
+      //     xhr.onload = () => handleResponse(xhr, false);
+      //   }
+
+      //   xhr.send();
+
+      //   e.preventDefault();
+      //   return false;
+      // };
+
+      const requestUpdate = e => {
+        const url = document.querySelector("#page").value;
+        const method = document.querySelector("#type").value;
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", url);
+
+        //xhr.setRequestHeader('Accept', 'application/json');
+
+        if (method === "application/json") {
+          xhr.setRequestHeader("Accept", "application/json");
+          xhr.onload = () => handleResponse(xhr, true);
+        } else if (method === "text/xml") {
+          xhr.setRequestHeader("Accept", "text/xml");
+          xhr.onload = () => handleResponse(xhr, false);
+        }
+
+        xhr.send();
+
+        e.preventDefault();
+        return false;
+      };
+
+      const init = () => {
+        const userForm = document.querySelector("#send");
+
+        const getUsers = e => requestUpdate(e);
+
+        userForm.addEventListener("click", getUsers);
+      };
+
+      window.onload = init;
+    </script>
+  </head>
+  <body>
+    <section id="top">
+      <h3>Status Code Tests</h3>
+      <select id="page">
+        <option value="/success">Success</option>
+        <option value="/badRequest">Bad Request</option>
+        <option value="/unauthorized">Unauthorized</option>
+        <option value="/forbidden">Forbidden</option>
+        <option value="/internal">Internal</option>
+        <option value="/notImplemented">Not Implemented</option>
+        <option value="/notFound">Not Found</option>
+      </select>
+      <select id="type">
+        <option value="application/json">JSON</option>
+        <option value="text/xml">XML</option>
+      </select>
+      <button id="send">Send</button>
+    </section>
+    <section id="content"></section>
+  </body>
 </html>
