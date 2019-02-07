@@ -1,5 +1,6 @@
 const http = require('http'); // http module
 const url = require('url'); // url module
+const query = require('querystring'); // query string module
 const htmlHandler = require('./htmlResponses.js');
 const jsonHandler = require('./jsonResponses.js');
 
@@ -11,7 +12,27 @@ const onRequest = (request, response) => {
   // returns an object of url parts by name
   const parsedUrl = url.parse(request.url);
 
-  // check the request method (get, head, post, etc)
+  // key:value object to look up URL routes to specific functions
+  // const urlStruct = {
+  //   // "/": htmlHandler.getIndex,
+  //   // "/success": jsonHandler.success,
+  //   "/badRequest": jsonHandler.badRequest,
+  //   notFound: jsonHandler.notFound
+  // };
+
+  // grab the query parameters (?key=value&key2=value2&etc=etc)
+  // and parse them into a reusable object by field name
+  const params = query.parse(parsedUrl.query);
+
+  // check if the path name (the /name part of the url) matches
+  // any in our url object. If so call that function. If not, default to index.
+  // if (urlStruct[parsedUrl.pathname]) {
+  //   urlStruct[parsedUrl.pathname](request, response, params);
+  // } else {
+  //   urlStruct.notFound(request, response, params);
+  // }
+
+  // check the request method seeing application/json or text/xml
   switch (request.method) {
     case 'GET':
       if (parsedUrl.pathname === '/') {
@@ -31,10 +52,12 @@ const onRequest = (request, response) => {
         jsonHandler.getSuccess(request, response);
       } else if (parsedUrl.pathname === '/badRequest') {
         // if success is selected
-        jsonHandler.getBadRequest(request, response);
+        console.log(params);
+        jsonHandler.getBadRequest(request, response, params);
       } else if (parsedUrl.pathname === '/unauthorized') {
         // if success is selected
-        jsonHandler.getUnauthorized(request, response);
+        console.log(params);
+        jsonHandler.getUnauthorized(request, response, params);
       } else if (parsedUrl.pathname === '/forbidden') {
         // if success is selected
         jsonHandler.getForbidden(request, response);

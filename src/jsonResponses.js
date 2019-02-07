@@ -10,7 +10,7 @@ const respondJSON = (request, response, status, object) => {
   // object for our headers
   // Content-Type for json
   const headers = {
-    "Content-Type": "application/json"
+    'Content-Type': 'application/json',
   };
 
   // send response with json object
@@ -25,7 +25,7 @@ const respondJSONMeta = (request, response, status) => {
   // object for our headers
   // Content-Type for json
   const headers = {
-    "Content-Type": "application/json"
+    'Content-Type': 'application/json',
   };
 
   // send response without json object, just headers
@@ -38,7 +38,7 @@ const respondJSONMeta = (request, response, status) => {
 const getUsers = (request, response) => {
   // json object to send
   const responseJSON = {
-    users
+    users,
   };
 
   // return 200 with message
@@ -48,15 +48,14 @@ const getUsers = (request, response) => {
 // get meta info about user object
 // should calculate a 200
 // return 200 without message, just the meta data
-const getUsersMeta = (request, response) =>
-  respondJSONMeta(request, response, 200);
+const getUsersMeta = (request, response) => respondJSONMeta(request, response, 200);
 
 // function just to update our object
 const updateUser = (request, response) => {
   // change to make to user
   // This is just a dummy object for example
   const newUser = {
-    createdAt: Date.now()
+    createdAt: Date.now(),
   };
 
   // modifying our dummy object
@@ -71,8 +70,8 @@ const updateUser = (request, response) => {
 const notFound = (request, response) => {
   // create error message for response
   const responseJSON = {
-    message: "The page you are looking for was not found.",
-    id: "notFound"
+    message: 'The page you are looking for was not found.',
+    id: 'notFound',
   };
 
   // return a 404 with an error message
@@ -88,38 +87,58 @@ const notFoundMeta = (request, response) => {
 const getSuccess = (request, response) => {
   // json message for response
   const responseJSON = {
-    message: "This is a successful response",
-    id: "success"
+    message: 'This is a successful response',
   };
   // return 200 with message
   return respondJSON(request, response, 200, responseJSON);
 };
 
-const getBadRequest = (request, response) => {
-  // json message for response
+const getBadRequest = (request, response, params) => {
+  // json message to send
   const responseJSON = {
-    message: "Missing valid query parameter set to true",
-    id: "badRequest"
+    message: 'This request has the required parameters',
   };
-  // return 400 with message
-  return respondJSON(request, response, 400, responseJSON);
+
+  // if the request does not contain a valid=true query parameter
+  if (!params.valid || params.valid !== 'true') {
+    // set our error message
+    responseJSON.message = 'Missing valid query parameter set to true';
+    // give the error a consistent id
+    responseJSON.id = 'badRequest';
+    // return our json with a 400 bad request code
+    return respondJSON(request, response, 400, responseJSON);
+  }
+
+  // if the parameter is here, send json with a success status code
+  return respondJSON(request, response, 200, responseJSON);
 };
 
-const getUnauthorized = (request, response) => {
-  // json message for response
+const getUnauthorized = (request, response, params) => {
+  // json message to send
   const responseJSON = {
-    message: "Missing loggedIn query parameter set to yes",
-    id: "Unauthorized"
+    message: 'This request has the required parameters',
   };
-  // return 401 with message
-  return respondJSON(request, response, 401, responseJSON);
+
+  // if the request does not contain a valid=true query parameter
+  if (!params.loggedIn || params.loggedIn !== 'yes') {
+    // set our error message
+    responseJSON.message = 'Missing loggedIn query parameter set to yes';
+    // give the error a consistent id
+    responseJSON.id = 'Unauthorized';
+
+    // return 401 with message
+    return respondJSON(request, response, 401, responseJSON);
+  }
+
+  // if the parameter is here, send json with a success status code
+  return respondJSON(request, response, 200, responseJSON);
 };
 
 const getForbidden = (request, response) => {
   // json message for response
   const responseJSON = {
-    message: "You do not have access to this content",
-    id: "Forbidden"
+    message: 'You do not have access to this content',
+    id: 'Forbidden',
   };
   // return 403 with message
   return respondJSON(request, response, 403, responseJSON);
@@ -128,8 +147,8 @@ const getForbidden = (request, response) => {
 const getInternal = (request, response) => {
   // json message for response
   const responseJSON = {
-    message: "Internal Server Error. Something went wrong",
-    id: "InternalError"
+    message: 'Internal Server Error. Something went wrong',
+    id: 'InternalError',
   };
   // return 500 with message
   return respondJSON(request, response, 500, responseJSON);
@@ -139,8 +158,8 @@ const getNotImplemented = (request, response) => {
   // json message for response
   const responseJSON = {
     message:
-      "A get request for this page has not been implemented yet. Check again later for updated content",
-    id: "notImplemented"
+      'A get request for this page has not been implemented yet. Check again later for updated content',
+    id: 'notImplemented',
   };
   // return 501 with message
   return respondJSON(request, response, 501, responseJSON);
@@ -158,5 +177,5 @@ module.exports = {
   getUnauthorized,
   getForbidden,
   getInternal,
-  getNotImplemented
+  getNotImplemented,
 };
