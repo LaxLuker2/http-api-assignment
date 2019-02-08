@@ -2,7 +2,7 @@
   "name": "http-api",
   "version": "1.0.0",
   "engines": {
-    "node": "11.0.0",
+    "node": "10.14.1",
     "npm": "6.4.1"
   },
   "description": "Http api assignment 1",

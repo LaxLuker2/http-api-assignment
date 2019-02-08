@@ -16,7 +16,10 @@
           console.dir(obj);
           Message = obj.message;
         } else {
-          console.log("recieved");
+          //xml
+          const obj = xhr.response;
+          console.dir(obj);
+          Message = xhr.responseXML.querySelector("message").textContent;
         }
 
         switch (xhr.status) {
@@ -61,40 +64,17 @@
         }
       };
 
-      // const requestUpdate = (e, userForm) => {
-      //   const url = userForm.querySelector('#urlField').value;
-      //   const method = userForm.querySelector('#methodSelect').value;
-
-      //   const xhr = new XMLHttpRequest();
-      //   xhr.open(method, url);
-
-      //   xhr.setRequestHeader('Accept', 'application/json');
-
-      //   if(method === 'get'){
-      //     xhr.onload = () => handleResponse(xhr, true);
-      //   } else if (method === 'head'){
-      //     xhr.onload = () => handleResponse(xhr, false);
-      //   }
-
-      //   xhr.send();
-
-      //   e.preventDefault();
-      //   return false;
-      // };
-
       const requestUpdate = e => {
         const url = document.querySelector("#page").value;
-        const method = document.querySelector("#type").value;
+        const type = document.querySelector("#type").value;
 
         const xhr = new XMLHttpRequest();
         xhr.open("GET", url);
 
-        //xhr.setRequestHeader('Accept', 'application/json');
-
-        if (method === "application/json") {
+        if (type === "application/json") {
           xhr.setRequestHeader("Accept", "application/json");
           xhr.onload = () => handleResponse(xhr, true);
-        } else if (method === "text/xml") {
+        } else if (type === "text/xml") {
           xhr.setRequestHeader("Accept", "text/xml");
           xhr.onload = () => handleResponse(xhr, false);
         }
@@ -106,11 +86,11 @@
       };
 
       const init = () => {
-        const userForm = document.querySelector("#send");
+        const sendBtn = document.querySelector("#send");
 
-        const getUsers = e => requestUpdate(e);
+        const sendReq = e => requestUpdate(e);
 
-        userForm.addEventListener("click", getUsers);
+        sendBtn.addEventListener("click", sendReq);
       };
 
       window.onload = init;
